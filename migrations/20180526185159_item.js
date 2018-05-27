@@ -1,14 +1,14 @@
 
 exports.up = function(knex, Promise) {
-  return knex.schema.createTable('story', table => {
+  return knex.schema.createTable('item', table => {
     table.increments('id')
     table.integer('useraccount_id').unsigned()
-    table.foreign('useraccount_id').references('useraccount')
+    table.foreign('useraccount_id').references('useraccount.id')
     table.text('text')
-    table.json('tags')
+    table.text('type')
   })
 };
 
 exports.down = function(knex, Promise) {
-  return knex.schema.dropTableIfExists('story')
+  return knex.schema.dropTableIfExists('item')
 };

@@ -37,13 +37,40 @@ function checkAuthToken(req, res, next) {
     });
 }
 
-app.get('/list/:type', checkAuthToken, (req, res, next) => {
+app.get('/list', checkAuthToken, (req, res, next) => {
   const userEmail = req.jwt.claims.sub
-  console.log(userEmail);
   const type = req.params.type
   queries.getListByUser(userEmail, type)
   .then(list =>{
-    res.send({data: list})
+    let promises = list.map(item => {
+      return queries.getItemTags(item.id)
+      .then(tags => {
+        item.tags = []
+        tags.forEach(tag => {
+          item.tags.push(tag.text)
+        })
+        return item
+      })
+    })
+    Promise.all(promises)
+    .then(list => {
+      queries.getTagsByUser(userEmail)
+      .then(tagList => {
+        let uniqueTags = []
+        tagList.map(tag => {
+          if(!uniqueTags.find(el => {
+            return el === tag.text
+          })) {
+            uniqueTags.push(tag.text)
+          }
+        })
+        res.send({data: {
+          list: list,
+          tags: uniqueTags
+        }})
+      })
+
+    })
   })
 });
 
