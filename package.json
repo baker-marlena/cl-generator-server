@@ -1,0 +1,20 @@
+{
+  "name": "cover-letter-gen",
+  "main": "app.js",
+  "author": "Marlena Baker",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "@okta/jwt-verifier": "0.0.12",
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "knex": "^0.14.4",
+    "pg": "^7.4.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.12.1"
+  }
+}
