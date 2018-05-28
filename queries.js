@@ -26,6 +26,12 @@ module.exports = {
     .select('useraccount.id')
     .where('useraccount.email', '=', email)
   },
+  getUserEmailByItemId(id){
+    return database('item')
+    .join('useraccount', 'item.useraccount_id', 'useraccount.id')
+    .select('useraccount.email')
+    .where('item.id', '=', id)
+  },
   checkTag(tag){
     return database('tag')
     .where('tag.text', '=', tag)
@@ -47,5 +53,10 @@ module.exports = {
     .insert(entry)
     .returning("*")
     .then(record => record[0]);
+  },
+  deleteItem(id){
+    return database('item')
+    .where('item.id', '=', id)
+    .del()
   }
 }
