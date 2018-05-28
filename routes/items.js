@@ -89,7 +89,6 @@ router.post('/add', checkAuthToken, (req, res, next) => {
               }
               return queries.createItemTag(entry)
               .then(itemTag => {
-                console.log(itemTag);
                 return true
               })
             })
@@ -115,12 +114,12 @@ router.post('/add', checkAuthToken, (req, res, next) => {
   })
 })
 
-router.delete('/:id', checkAuthToken, req, res, next) => {
+router.delete('/delete/:id', checkAuthToken, (req, res, next) => {
   const userEmail = req.jwt.claims.sub
   const itemId = req.params.id
   queries.getUserEmailByItemId(itemId)
-  .then(email => {
-    if(email === userEmail){
+  .then(user => {
+    if(user[0].email === userEmail){
       queries.deleteItem(itemId)
       .then(response => {
         res.send({message: 'Success!'})
