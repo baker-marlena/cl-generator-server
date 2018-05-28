@@ -20,5 +20,32 @@ module.exports = {
     .join('tag', 'item_tag.tag_id', 'tag.id')
     .where('useraccount.email', '=', email)
     .select('tag.text')
+  },
+  getUserIdByEmail(email){
+    return database('useraccount')
+    .select('useraccount.id')
+    .where('useraccount.email', '=', email)
+  },
+  checkTag(tag){
+    return database('tag')
+    .where('tag.text', '=', tag)
+  },
+  createItem(item){
+    return database('item')
+    .insert(item)
+    .returning("*")
+    .then(record => record[0]);
+  },
+  createTag(tag){
+    return database('tag')
+    .insert({text: tag})
+    .returning("*")
+    .then(record => record[0]);
+  },
+  createItemTag(entry){
+    return database('item_tag')
+    .insert(entry)
+    .returning("*")
+    .then(record => record[0]);
   }
 }

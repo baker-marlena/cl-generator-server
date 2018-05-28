@@ -39,8 +39,7 @@ function checkAuthToken(req, res, next) {
 
 app.get('/list', checkAuthToken, (req, res, next) => {
   const userEmail = req.jwt.claims.sub
-  const type = req.params.type
-  queries.getListByUser(userEmail, type)
+  queries.getListByUser(userEmail)
   .then(list =>{
     let promises = list.map(item => {
       return queries.getItemTags(item.id)
@@ -69,9 +68,58 @@ app.get('/list', checkAuthToken, (req, res, next) => {
           tags: uniqueTags
         }})
       })
-
     })
   })
-});
+})
+
+app.post('/add', checkAuthToken, (req, res, next) => {
+  const userEmail = req.jwt.claims.sub
+  queries.getUserIdByEmail(userEmail)
+  .then(id => {
+    item = {
+      useraccount_id: id[0].id,
+      text: req.body.text,
+      type: req.body.type
+    }
+    queries.createItem(item)
+    .then(itemResponse => {
+      let tagIds = req.body.tags.map(tag => {
+        return queries.checkTag(tag)
+        .then(tagResult => {
+          if(tagResult.length === 0){
+            return queries.createTag(tag)
+            .then(tagInfo => {
+              let entry = {
+                tag_id: tagInfo.id,
+                item_id: itemResponse.id
+              }
+              return queries.createItemTag(entry)
+              .then(itemTag => {
+                console.log(itemTag);
+                return true
+              })
+            })
+          } else {
+            let entry = {
+              tag_id: tagResult[0].id,
+              item_id: itemResponse.id
+            }
+            return queries.createItemTag(entry)
+            .then(itemTag => {
+              console.log(itemTag)
+              return false
+            })
+
+          }
+        })
+      })
+      Promise.all(tagIds)
+      .then(finalResponse => {
+        res.send({message: "Success!"})
+      })
+    })
+  })
+
+})
 
 app.listen(process.env.PORT || 3000);
