@@ -5,10 +5,12 @@ const cors = require('cors');
 const app = express();
 
 const items = require('./routes/items')
+const users = require('./routes/users')
 
 app.use(cors());
 app.use(bodyParser.json());
 
+app.use('/user', users)
 app.use('/items', items)
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

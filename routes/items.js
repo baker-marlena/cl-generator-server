@@ -66,6 +66,27 @@ router.get('/list', checkAuthToken, (req, res, next) => {
   })
 })
 
+router.get('/:id', checkAuthToken, (req, res, next) => {
+  const userEmail = req.jwt.claims.sub
+  const itemId = req.params.id
+  queries.getUserEmailByItemId(itemId)
+  .then(user => {
+    if(user[0].email === userEmail){
+      queries.getItemById(itemId)
+      .then(item => {
+        queries.getItemTags(itemId)
+        .then(tags => {
+          item[0].tags = tags
+          res.send({data: item[0]})
+        })
+      })
+    } else {
+      res.status(401);
+      return next('Unauthorized')
+    }
+  })
+})
+
 router.post('/add', checkAuthToken, (req, res, next) => {
   const userEmail = req.jwt.claims.sub
   queries.getUserIdByEmail(userEmail)
@@ -114,6 +135,8 @@ router.post('/add', checkAuthToken, (req, res, next) => {
   })
 })
 
+// router.put('/:id', )
+
 router.delete('/delete/:id', checkAuthToken, (req, res, next) => {
   const userEmail = req.jwt.claims.sub
   const itemId = req.params.id
@@ -125,8 +148,8 @@ router.delete('/delete/:id', checkAuthToken, (req, res, next) => {
         res.send({message: 'Success!'})
       })
     } else {
-      res.status(401);
-      return next('Unauthorized');
+      res.status(401)
+      return next('Unauthorized')
     }
   })
 })

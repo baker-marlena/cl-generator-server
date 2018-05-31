@@ -13,6 +13,10 @@ module.exports = {
     .where('item_tag.item_id', '=', id)
     .select('tag.text')
   },
+  getItemById(id){
+    return database('item')
+    .where('item.id', '=', id)
+  },
   getTagsByUser(email){
     return database('useraccount')
     .join('item', 'useraccount.id', 'item.useraccount_id')
@@ -35,6 +39,12 @@ module.exports = {
   checkTag(tag){
     return database('tag')
     .where('tag.text', '=', tag)
+  },
+  createUser(user) {
+    return database('useraccount')
+    .insert({email: user})
+    .returning("*")
+    .then(record => record[0]);
   },
   createItem(item){
     return database('item')
