@@ -135,7 +135,55 @@ router.post('/add', checkAuthToken, (req, res, next) => {
   })
 })
 
-// router.put('/:id', )
+router.put('/:id', checkAuthToken, (req, res, next) => {
+  const userEmail = req.jwt.claims.sub
+  const itemId = req.params.id
+  queries.getUserEmailByItemId(itemId)
+  .then(user => {
+    if(user[0].email === userEmail){
+      let item = {
+        type: req.body.type,
+        text: req.body.text
+      }
+      queries.updateItem(item)
+      .then(itemResponse => {
+        queries.getItemTags(itemId)
+        .then(tags => {
+          let tagsText = tags.map(tag => tag.text)
+          let tagsRemoved = tagsText.filter(tag => {
+            return !req.body.tags.find(el => tag === el)
+          })
+          let tagsAdded = req.body.tags.filter(topic => {
+            return !tagsText.find(el => topic === el)
+          })
+          let promises = tagsAdded.map(tag => {
+            return queries.createTag(tag)
+            .then(tagInfo => {
+              console.log('new tag', tagInfo);
+              let entry = {
+                tag_id: tagInfo.id,
+                item_id: itemId
+              }
+              return queries.createItemTag(entry)
+              .then(itemTag => {
+                console.log('join', itemTag);
+                return true
+              })
+            })
+          })
+          tagsRemoved.forEach(tag => {
+            promises.push(queries.deleteTag(tag))
+          })
+          Promise.all(promises)
+          .then(response => {
+            console.log('promise all', response);
+            res.send({Message: 'Success!'})
+          })
+        })
+      })
+    }
+  })
+})
 
 router.delete('/delete/:id', checkAuthToken, (req, res, next) => {
   const userEmail = req.jwt.claims.sub

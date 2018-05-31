@@ -64,9 +64,20 @@ module.exports = {
     .returning("*")
     .then(record => record[0]);
   },
+  updateItem(item){
+    return database('item')
+    .update(item)
+    .returning("*")
+    .then(record => record[0]);
+  },
   deleteItem(id){
     return database('item')
     .where('item.id', '=', id)
+    .del()
+  },
+  deleteTag(text) {
+    return database('tag')
+    .where('tag.text', '=', text)
     .del()
   }
 }
