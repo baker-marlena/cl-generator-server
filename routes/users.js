@@ -33,14 +33,14 @@ function checkAuthToken(req, res, next) {
     });
 }
 
-router.get('/', checkAuthToken, (req, res, next) => {
-  const userEmail = req.jwt.claims.sub
-  queries.getUserName(userEmail)
-  .then(user => {
-    console.log(user);
-    res.send({data: user[0]})
-  })
-})
+// router.get('/', checkAuthToken, (req, res, next) => {
+//   const userEmail = req.jwt.claims.sub
+//   queries.getUserName(userEmail)
+//   .then(user => {
+//     console.log(user);
+//     res.send({data: user[0]})
+//   })
+// })
 
 router.post('/register', (req, res, next) => {
   console.log('getting the request', req.body)
