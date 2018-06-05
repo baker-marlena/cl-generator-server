@@ -8,7 +8,7 @@ module.exports = {
   },
 
   production: {
-    client: 'pg',
+    client: 'postrgesql',
     connection: process.env.DATABASE_URL
   }
 

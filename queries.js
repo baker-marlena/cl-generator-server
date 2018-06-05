@@ -1,6 +1,11 @@
 const database = require('./database-connection')
 
 module.exports = {
+  getUserName(email) {
+    return database('useraccount')
+    .where('useraccount.email', '=', email)
+    .select('useraccount.firstName')
+  },
   getListByUser(email) {
     return database('useraccount')
     .join('item', 'useraccount.id', `item.useraccount_id`)
@@ -42,7 +47,7 @@ module.exports = {
   },
   createUser(user) {
     return database('useraccount')
-    .insert({email: user})
+    .insert(user)
     .returning("*")
     .then(record => record[0]);
   },

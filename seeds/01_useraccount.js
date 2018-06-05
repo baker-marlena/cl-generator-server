@@ -5,7 +5,7 @@ exports.seed = function(knex, Promise) {
     .then(function () {
       // Inserts seed entries
       return knex('useraccount').insert([
-        {email: 'baker.marlena@gmail.com'}
+        {email: 'baker.marlena@gmail.com', firstName: 'Marlena'}
       ]);
     });
 };
